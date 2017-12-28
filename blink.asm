@@ -70,7 +70,7 @@ blink:
 delay:
    clr overflows         ; set overflows to 0 
    sec_count:
-     cpi overflows,2    ; compare number of overflows and 30
+     cpi overflows,30    ; compare number of overflows and 30
    brne sec_count        ; branch to back to sec_count if not equal 
    ret                   ; if 30 overflows have occured return to blink
 
