@@ -62,7 +62,7 @@ Reset:
 
 blink:
    sbi PORTB, 2          ; turn on LED on PD4
-   rcall delay           ; delay will be 1/2 second
+   rcall ondelay           ; delay will be 1/2 second
    cbi PORTB, 2          ; turn off LED on PD4
    rcall delay           ; delay will be 1/2 second
    rjmp blink            ; loop back to the start
@@ -70,13 +70,18 @@ blink:
 delay:
    clr overflows         ; set overflows to 0 
    sec_count:
-     cpi overflows,30    ; compare number of overflows and 30
+     cpi overflows,255    ; compare number of overflows and 30
    brne sec_count        ; branch to back to sec_count if not equal 
    ret                   ; if 30 overflows have occured return to blink
-
+ondelay:
+    clr overflows
+    split_count:
+     cpi overflows,1
+    brne split_count
+    ret
 overflow_handler: 
    inc overflows         ; add 1 to the overflows variable
-   cpi overflows, 61     ; compare with 61
-   brne PC+2             ; Program Counter + 2 (skip next line) if not equal
-   clr overflows         ; if 61 overflows occured reset the counter to zero
+   ;cpi overflows, 61     ; compare with 61
+   ;brne PC+2             ; Program Counter + 2 (skip next line) if not equal
+   ;clr overflows         ; if 61 overflows occured reset the counter to zero
    reti                  ; return from interrupt

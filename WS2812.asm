@@ -58,11 +58,35 @@ Reset:
    ldi temp, 0b10000000
    out TCNT0, temp       ; initialize the Timer/Counter to 128
 
-   sbi DDRB, 2           ; set PD4 to output
+   sbi DDRB, 3           ; Set Pin 10 to Output
+   sbi DDRB, 2           ; Set Pin 11 to Output
+   sbi DDRB, 4           ; Set Pin 12 to Output
 
 ;======================
 ; Main body of program:
 Main:
+
+
+; B BYTE-----------------
+  rcall T_1
+  rcall T_0
+  rcall T_1
+  rcall T_1
+  rcall T_0
+  rcall T_1
+  rcall T_0
+  rcall T_0
+; G BYTE-----------------  
+  rcall T_0
+  rcall T_1
+  rcall T_0
+  rcall T_0
+  rcall T_1
+  rcall T_0
+  rcall T_1
+  rcall T_1
+
+; R BYTE-----------------  
   rcall T_1
   rcall T_0
   rcall T_1
@@ -74,16 +98,16 @@ Main:
   rjmp Main
   
 T_1:
-   sbi PORTB, 2          ; turn on LED on PD4
+   sbi PORTB, 4         ; turn on LED on PD4
    rcall delay_800       ; delay will be 800 nanoseconds
-   cbi PORTB, 2          ; turn off LED on PD4
+   cbi PORTB, 4          ; turn off LED on PD4
    rcall delay_300       ; delay will be 300 nanoseconds
    ret           
 
 T_0:
-  sbi PORTB, 2
+  sbi PORTB, 4
   rcall delay_300
-  cbi PORTB, 2
+  cbi PORTB, 4
   rcall delay_800
   ret
 
@@ -92,7 +116,7 @@ delay_800:
    out TCNT0, temp       ; initialize the Timer/Counter to 207
    clr overflows         ; set overflows to 0 
    sec_count_1:
-     cpi overflows,1    ; compare number of overflows and 30
+     cpi overflows,1   ; compare number of overflows and 30
    brne sec_count_1        ; branch to back to sec_count if not equal 
    ret
    
