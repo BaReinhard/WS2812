@@ -95,6 +95,7 @@ Main:
   rcall T_1
   rcall T_0
   rcall T_0
+  rcall STOP_BIT
   rjmp Main
   
 T_1:
@@ -110,7 +111,18 @@ T_0:
   cbi PORTB, 4
   rcall delay_800
   ret
-
+STOP_BIT:
+  cbi PORTB, 4
+  rcall delay_50msec
+  ret
+delay_50msec:
+   ldi temp, 0b00000000
+   out TCNT0, temp
+   clr overflows
+   msec_count:
+     cpi overflows, 31
+   brne msec_count
+   ret
 delay_800:
    ldi temp, 0b11001111
    out TCNT0, temp       ; initialize the Timer/Counter to 207
