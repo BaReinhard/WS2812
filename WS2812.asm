@@ -10,10 +10,10 @@
 ;************************************
 
 ; Program funcion:---------------------
-; counts off seconds by blinking an LED
-;
-; PD4 ---> LED ---> R(330 ohm) ---> GND
-;
+; Able to control a WS2812 led/strand
+; Simply send a byte of 1's and 0's 
+; depending on color desired, 24 bits per
+; WS2812 chip
 ;--------------------------------------
 
 .nolist
