@@ -1,81 +1,57 @@
-int *data[24];
-void setup(){
-  DDRB = B11111111;
-  PORTB = B00000000;
- for(int i = 0;i<24;i++)
-  data[i] = new int(1);
-}
+// Needs Defines
+ 
+#include <avr/io.h>
+#include <util/delay.h>
+int data[24];
 
+extern void delay_T0H();
+extern void delay_T1H();
+extern void delay_TLD();
+
+int main(){
+  for(int i=0 ; i<24 ; i++){
+  if(i<8)
+  data[i] = 1;
+  else
+  data[i] = 0;
+}
+DDRB = 0b11111111;
+PORTB = 0b00000000;
+
+  loop();
+}
 void loop(){
   send_bytes(data,24);
+  loop();
 }
 
-void nsecDelay(long nsecs){
-  unsigned long counter;
-  counter = nsecs/6.25;
-  asm volatile(
-    "loop&=:\n\t"
-    "nop\n\t"
-    "dec %0\n\t"
-    "brne loop\n\t"
-     :"=r"(counter)
-    );
-}
+
 
 void send_bytes(int **data, int data_len){
-    for(int i=0;i < 8;i++)
-      send_bit_red(data[i]); 
-    for(int i=8;i < 16;i++)
-      send_bit_blue(data[i]);
-    for(int i=16;i < 24;i++)
-      send_bit_green(data[i]);
+    for(int i=0;i < 24;i++){
+      send_bit(data[i]);
+      
+    } 
+    
+    PORTB = 0b00000000;
+    _delay_ms(60000);
+    
+
 }
 
-void send_bit_red(int bi){
-  if(bi){
-  PORTB = B00000100;
-  delayMicroseconds(30);
-  PORTB = B00000000;
-  delayMicroseconds(1000);
+void send_bit(int bi){
+  if(bi==1){
+  PORTB = 0b00000100;
+  delay_T1H();
+  PORTB = 0b00000000;
+  delay_TLD();
   return;
   }
   else{
-  PORTB = B00000100;
-  delayMicroseconds(3);
-  PORTB = B00000000;
-  delayMicroseconds(1000);
-  return;
-  }
-}
-void send_bit_green(int bi){
-  if(bi){
-  PORTB = B00010000;
-  delayMicroseconds(30);
-  PORTB = B00000000;
-  delayMicroseconds(1000);
-  return;
-  }
-  else{
-  PORTB = B00000100;
-  delayMicroseconds(3);
-  PORTB = B00000000;
-  delayMicroseconds(1000);
-  return;
-  }
-}
-void send_bit_blue(int bi){
-  if(bi){
-  PORTB = B00001000;
-  delayMicroseconds(30);
-  PORTB = B00000000;
-  delayMicroseconds(1000);
-  return;
-  }
-  else{
-  PORTB = B00000100;
-  delayMicroseconds(3);
-  PORTB = B00000000;
-  delayMicroseconds(1000);
+  PORTB = 0b00000100;
+  delay_T0H();
+  PORTB = 0b00000000;
+  delay_TLD();
   return;
   }
 }

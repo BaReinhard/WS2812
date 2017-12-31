@@ -22,7 +22,10 @@
 
 ;==============
 ; Declarations:
-
+.globl delay_T0H
+.globl delay_T1H
+.globl delay_TLD
+.globl delay_TLL
 .def temp = r16
 .def overflows = r17
 .def counter = r22
@@ -53,11 +56,7 @@ ldi TLL,0b11011010
 ;============
 
 Reset: 
-   ldi temp,  0b00000001 
-   out TCCR0B, temp      ; Set Clock Selector Bit CS00, CS01, CS02 to 001
-                         ; this puts the Timer Counter0, TCNTO in FCPU/ mode, no prescaler
-                         ; so it ticks at the CPU freq
-         
+   
    
    
    ; Set Timer ----------------------------------
@@ -87,13 +86,13 @@ Main:
   breq second_set
 GREEN:
 ; G BYTE-----------------  
+    rcall T_0
+    rcall T_0
+    rcall T_0
+    rcall T_0
     rcall T_1
     rcall T_0
     rcall T_1
-    rcall T_0
-    rcall T_0
-    rcall T_0
-    rcall T_0
     rcall T_0
     
   ; R BYTE------------------
@@ -103,15 +102,15 @@ GREEN:
     rcall T_0 ;4
     rcall T_0 ;5
     rcall T_0 ;6
-    rcall T_1 ;7
-    rcall T_0 ;8
+    rcall T_0 ;7
+    rcall T_1 ;8
   ; B BYTE-------------------
 
     rcall T_0
     rcall T_0
     rcall T_0
     rcall T_0
-    rcall T_1
+    rcall T_0
     rcall T_0
     rcall T_0
     rcall T_1
@@ -128,10 +127,10 @@ RED:
   rcall T_0
   
 ; R BYTE------------------
-  rcall T_1 ;1
-  rcall T_1 ;2
-  rcall T_1 ;3
-  rcall T_1 ;4
+  rcall T_0 ;1
+  rcall T_0 ;2
+  rcall T_0 ;3
+  rcall T_0 ;4
   rcall T_1 ;5
   rcall T_1 ;6
   rcall T_1 ;7
@@ -168,24 +167,24 @@ second_set:
   rcall T_0
   rcall T_0
 ; R BYTE------------------
-  rcall T_1 ;1
-  rcall T_1 ;2
+  rcall T_0 ;1
+  rcall T_0 ;2
   rcall T_0 ;3
   rcall T_0 ;4
-  rcall T_0 ;5
-  rcall T_0 ;6
+  rcall T_1 ;5
+  rcall T_1 ;6
   rcall T_1 ;7
   rcall T_0 ;8
 ; B BYTE-------------------
 
-  rcall T_1
-  rcall T_1
-  rcall T_1
-  rcall T_1
   rcall T_0
   rcall T_0
   rcall T_0
   rcall T_0
+  rcall T_1
+  rcall T_1
+  rcall T_1
+  rcall T_1
   ret
 third_set:
   rcall MAGENTA
@@ -222,7 +221,7 @@ T_0:
 
 delay_T1H:
   nop
-  nop                     ; Delay 8 cycles
+  nop                     
   ret
 
 delay_T0H:
@@ -240,6 +239,11 @@ delay_TLD:
   nop
   ret  
 delay_TLL:
+ldi temp,  0b00000001 
+   out TCCR0B, temp      ; Set Clock Selector Bit CS00, CS01, CS02 to 001
+                         ; this puts the Timer Counter0, TCNTO in FCPU/ mode, no prescaler
+                         ; so it ticks at the CPU freq
+         
    ldi temp, 0b00000001   
    sts TIMSK0, temp       ; set the Timer Overflow Interrupt Enable (TOIE0) 0th bit 
                           ; of the Timer Interrupt Mask Register (TIMSK0)
