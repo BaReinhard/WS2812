@@ -22,7 +22,7 @@ send_bytes(data,24);
 
 
 
-void send_bytes(int *data, int data_len){
+void send_bytes(int data[], int data_len){
   for(int z = 0;z<32;z++){
     for(int i=0;i < data_len;i++){
       send_bit(data[i]);
