@@ -13,9 +13,9 @@ extern void delay_TLD();
 int main(){
   for(int i=0 ; i<24 ; i++){
   if(i>16)
-  data[i] = 0;
-  else
   data[i] = 1;
+  else
+  data[i] = 0;
 }
 DDRB = 0b11111111;
 PORTB = 0b00000000;
