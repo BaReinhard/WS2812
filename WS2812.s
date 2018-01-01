@@ -1,5 +1,4 @@
 
-.globl delay_T0H
 .globl delay_T1H
 .globl delay_TLD
 
@@ -12,6 +11,8 @@ delay_T1H:
   ret
 
 delay_T0H:
+nop
+nop
   ret                    ; Delay 1 Cycle
    
 delay_TLD:
@@ -20,8 +21,6 @@ delay_TLD:
   nop
   nop
   nop 
-  nop
-  nop
   nop
   nop
   nop
