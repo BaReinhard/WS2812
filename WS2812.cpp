@@ -9,16 +9,57 @@ struct GRB{
   int r[8]; 
   int b[8];
 };
+extern "C" void delay_T1H();
+extern "C" void delay_TLD();
 class WS2812{
   public:
-  WS2812(){
+  WS2812(int size){
+    _size = size;
+    for(int z=0;z<_size;z++){
     for(int i=0;i<8;i++){
-      _grb.g[i]=1;
-      _grb.r[i]=1;
-      _grb.b[i]=1;
+      if(z%2==0 && i%3==0){
+      _grb[z].g[i]=1;
+      _grb[z].r[i]=0;
+      _grb[z].b[i]=1;
+      }else{
+        _grb[z].g[i]=0;
+      _grb[z].r[i]=1;
+      _grb[z].b[i]=0;
+      }
+    }
     }
   }
-  GRB _grb;
+  void send_bytes(){
+  for(int z = 0;z<_size;z++){
+    for(int i=0;i < 8;i++){
+      send_bit(_grb[z].g[i]);
+    } 
+    for(int i=0;i < 8;i++){
+      send_bit(_grb[z].r[i]);
+    }
+    for(int i=0;i < 8;i++){
+      send_bit(_grb[z].b[i]);
+    }
+  }
+    PORTB = 0b00000000;
+    _delay_ms(.6);
+    send_bytes();
+}
+
+void send_bit(int bi){
+  if(bi==1){
+  PORTB = 0b00000100;
+  delay_T1H();  
+  }
+  else{
+  PORTB = 0b00000100;
+  delay_T0H();  
+  }
+  PORTB = 0b00000000;
+  delay_TLD();
+}
+  int _size;
+  GRB _grb[100];
 };
 void init_blue(int data[],int data_len, int start);
 void init_green(int data[],int data_len, int start);
@@ -31,24 +72,16 @@ void init_green(WS2812 ws);
 void init_red(WS2812 ws);
 void init_white(WS2812 ws);
 void send_bytes(WS2812 ws);
-extern "C" void delay_T1H();
-extern "C" void delay_TLD();
+
 
 int main(){
-  WS2812 ws;
-  init_white(ws);
+  WS2812 ws(3);
   DDRB = 0b11111111;
   PORTB = 0b00000000;
-  send_bytes(ws);
+  ws.send_bytes();
+  
 }
-void init_white(WS2812 ws){
-  for(int i = 0;i<8;i++){
-    ws._grb.r[i]=1;
-    ws._grb.g[i]=1;
-    ws._grb.b[i]=1;
-    
-  }
-}
+
 void init_white(int data[],int data_len, int start){
   for(int i=start ; i<data_len ; i++)
   data[i]=1;
@@ -89,32 +122,4 @@ void send_bytes(int data[], int data_len){
     _delay_ms(.6);
     send_bytes(data,data_len);
 }
-void send_bytes(WS2812 ws){
-  for(int z = 0;z<16;z++){
-    for(int i=0;i < 8;i++){
-      send_bit(ws._grb.g[i]);
-    } 
-    for(int i=0;i < 8;i++){
-      send_bit(ws._grb.r[i]);
-    }
-    for(int i=0;i < 8;i++){
-      send_bit(ws._grb.b[i]);
-    }
-  }
-    PORTB = 0b00000000;
-    _delay_ms(.6);
-    send_bytes(ws);
-}
 
-void send_bit(int bi){
-  if(bi==1){
-  PORTB = 0b00000100;
-  delay_T1H();  
-  }
-  else{
-  PORTB = 0b00000100;
-  delay_T0H();  
-  }
-  PORTB = 0b00000000;
-  delay_TLD();
-}
